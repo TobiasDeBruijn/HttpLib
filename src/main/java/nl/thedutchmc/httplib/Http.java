@@ -41,7 +41,7 @@ public class Http {
 	 * @throws MalformedURLException Thrown when an invalid URL is given
 	 * @throws IOException Thrown when an IOException occurs
 	 */
-	public ResponseObject makeRequest(RequestMethod method, String targetUrl, HashMap<String, String> params, MediaFormat requestBodyFormat, String requestBody) throws MalformedURLException, IOException {
+	public ResponseObject makeRequest(RequestMethod method, String targetUrl, HashMap<String, String> params, MediaFormat requestBodyFormat, String requestBody, HashMap<String, String> customHeaders) throws MalformedURLException, IOException {
 		//Turn the HashMap of parameters into a String
 		String sParams = "";
 		if(params != null) {
@@ -64,12 +64,18 @@ public class Http {
 			sMethod = "DELETE";
 			break;
 		}
-		
+
 		//Create the URL, open a connection and connect.
     	final URL url = new URL(targetUrl + sParams);
     	final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     	conn.setRequestMethod(sMethod);
     	conn.setDoOutput(true);
+
+		if(customHeaders != null) {
+			for(Map.Entry<String, String> entry : customHeaders.entrySet()) {
+				conn.setRequestProperty(entry.getKey(), entry.getValue());
+			}
+		}
     	
        	if(requestBody != null) {
     		byte[] postData = requestBody.getBytes(StandardCharsets.UTF_8);    		
