@@ -5,6 +5,8 @@
 
 package nl.thedutchmc.httplib;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,6 +23,14 @@ import java.util.stream.Collectors;
 import com.google.common.base.Charsets;
 
 public class Http {
+
+	private static boolean debugMode = false;
+
+	public Http() {}
+	
+	public Http(boolean debugMode) {
+		Http.debugMode = debugMode;
+	}
 
 	/**
 	 * Send a HTTP Request
@@ -89,9 +99,9 @@ public class Http {
             result = reader.lines().collect(Collectors.joining("\n"));
 
         } catch(IOException e) {
-            App.logDebug("HttpRequest: " + method + "::" + targetUrl);
-            App.logDebug("HttpRequest: " + conn.getResponseCode() + "::" + conn.getResponseMessage());
-            App.logDebug("HttpRequest ErrorStream: \n" + new BufferedReader(new InputStreamReader(conn.getErrorStream())).lines().collect(Collectors.joining("\n")));
+            logDebug("HttpRequest: " + method + "::" + targetUrl);
+            logDebug("HttpRequest: " + conn.getResponseCode() + "::" + conn.getResponseMessage());
+            logDebug("HttpRequest ErrorStream: \n" + new BufferedReader(new InputStreamReader(conn.getErrorStream())).lines().collect(Collectors.joining("\n")));
             
             e.printStackTrace();
         }
@@ -112,13 +122,6 @@ public class Http {
 		
 		for(Map.Entry<String, String> entry : input.entrySet()) {
 			
-			//If we're on the first iteration,
-			//add the '?' character
-/*			if(index == 1) {
-				result.append("?");
-			}
-*/		
-			//Add the key, a '=' and the value.
 			try {
 				result.append(URLEncoder.encode(entry.getKey(), Charsets.UTF_8.toString()));
 				result.append("=");
@@ -184,5 +187,14 @@ public class Http {
 		public String getConnectionMessage() {
 			return this.connectionMessage;
 		}
+	}
+
+	private static void logDebug(Object log) {
+		if(!debugMode) return;
+
+		//kk:mm:ss --> hour:minute:seconds, without hours going 0-24
+		final DateTimeFormatter f = DateTimeFormatter.ofPattern("kk:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		System.out.println("[" + now.format(f) + "][DEBUG][HttpLib] " + log.toString());
 	}
 }
