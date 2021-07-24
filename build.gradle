@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = "1.2.0"
+version = "1.2.1"
 group = "dev.array21"
 
 sourceCompatibility = 1.16
@@ -89,5 +89,7 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.mavenJava
+	if(!System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+	    sign publishing.publications.mavenJava
+	}
 }

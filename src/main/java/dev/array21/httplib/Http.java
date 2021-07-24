@@ -103,12 +103,14 @@ public class Http {
             result = reader.lines().collect(Collectors.joining("\n"));
 
         } catch(IOException e) {
-            logDebug("HttpRequest: " + method + "::" + targetUrl);
-            logDebug("HttpRequest: " + conn.getResponseCode() + "::" + conn.getResponseMessage());
-            logDebug("HttpRequest ErrorStream: \n" + new BufferedReader(new InputStreamReader(conn.getErrorStream())).lines().collect(Collectors.joining("\n")));
-            
         	BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
         	result = reader.lines().collect(Collectors.joining("\n"));
+        	
+        	logDebug("HttpRequest: " + method + "::" + targetUrl);
+            logDebug("HttpRequest: " + conn.getResponseCode() + "::" + conn.getResponseMessage());
+            logDebug("HttpRequest ErrorStream: \n" + result);
+            
+
         }
                 
         conn.disconnect();
