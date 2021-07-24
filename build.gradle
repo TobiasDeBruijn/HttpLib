@@ -1,12 +1,93 @@
 plugins {
     id 'java'
+    id 'eclipse'
+    id 'signing'
+    id 'maven-publish'
 }
 
-repositories {
-    jcenter()
+version = "1.2.0"
+group = "dev.array21"
+
+sourceCompatibility = 1.16
+targetCompatibility = 1.16
+
+repositories {}
+
+dependencies {}
+
+javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
 }
 
-dependencies {
-    implementation 'com.google.guava:guava:29.0-jre'
-    testImplementation 'junit:junit:4.13'
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+	repositories {
+		maven {
+			name = "ossrh"
+			url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+			credentials {
+				username = findProperty('ossrhUsername')
+				password = findProperty('ossrhPassword')
+			}
+		}
+		
+		// Uncomment this only if your version ends with -SNAPSHOT, you'll get a 400 otherwhise.
+		/*
+		maven {
+			name = "ossrhSnapshot"
+			url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+			credentials {
+				username = findProperty('ossrhUsername')
+				password = findProperty('ossrhPassword')
+			}
+		}*/
+	}
+
+	publications {
+    	mavenJava(MavenPublication) {
+      		from components.java
+      		artifact sourcesJar
+      		artifact javadocJar
+      		
+			pom {
+		    	name = 'HttpLib'
+		    	artifactId = 'httplib'
+		    	packaging = 'jar'
+		    	description = 'Simple Java HTTP library uitlizing java.net.HttpUrlConnection'
+		    	url = 'https://github.com/TheDutchMC/HttpLib'
+			
+				scm {
+					connection = 'scm:git:git://github.com/TheDutchMC/HttpLib.git'
+					developerConnection = 'scm:git:ssh://github.com/TheDutchMC/HttpLib.git'
+					url = 'https://github.com/TheDutchMC/HttpLib'
+				}
+		
+		    	licenses {
+		      		license {
+		        		name = 'MIT Licence'
+		        		url = 'https://github.com/TheDutchMC/HttpLib/blob/master/LICENSE'
+		      		}
+	    		}
+		
+		    	developers {
+		      		developer {
+		        		id = 'tobiasdebruijn'
+		        		name = 'Tobias de Bruijn'
+		        		email = 't.debruijn@array21.dev'
+		      		}
+		    	}
+		    }
+    	}
+	}
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }

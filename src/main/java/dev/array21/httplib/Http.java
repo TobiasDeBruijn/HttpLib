@@ -3,7 +3,7 @@
  * @author Tobias de Bruijn
  */
 
-package nl.thedutchmc.httplib;
+package dev.array21.httplib;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,16 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Charsets;
-
 public class Http {
 
-	private static boolean debugMode = false;
+	private boolean debugMode = false;
 
 	public Http() {}
 	
 	public Http(boolean debugMode) {
-		Http.debugMode = debugMode;
+		this.debugMode = debugMode;
 	}
 
 	/**
@@ -109,7 +107,8 @@ public class Http {
             logDebug("HttpRequest: " + conn.getResponseCode() + "::" + conn.getResponseMessage());
             logDebug("HttpRequest ErrorStream: \n" + new BufferedReader(new InputStreamReader(conn.getErrorStream())).lines().collect(Collectors.joining("\n")));
             
-            e.printStackTrace();
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
+        	result = reader.lines().collect(Collectors.joining("\n"));
         }
                 
         conn.disconnect();
@@ -118,7 +117,7 @@ public class Http {
 		return http.new ResponseObject(result, conn.getResponseCode(), conn.getResponseMessage());
 	}
 	
-	public static String hashMapToString(HashMap<String, String> input) {
+	private String hashMapToString(HashMap<String, String> input) {
 		if(input == null) {
 			return "";
 		}
@@ -126,12 +125,11 @@ public class Http {
 		final StringBuilder result = new StringBuilder();
 		int index = 1;
 		
-		for(Map.Entry<String, String> entry : input.entrySet()) {
-			
+		for(Map.Entry<String, String> entry : input.entrySet()) {			
 			try {
-				result.append(URLEncoder.encode(entry.getKey(), Charsets.UTF_8.toString()));
+				result.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
 				result.append("=");
-				result.append(URLEncoder.encode(entry.getValue(), Charsets.UTF_8.toString()));
+				result.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
 			} catch(Exception e) {}
 
 			
@@ -195,8 +193,8 @@ public class Http {
 		}
 	}
 
-	private static void logDebug(Object log) {
-		if(!debugMode) return;
+	private void logDebug(Object log) {
+		if(!this.debugMode) return;
 
 		//kk:mm:ss --> hour:minute:seconds, without hours going 0-24
 		final DateTimeFormatter f = DateTimeFormatter.ofPattern("kk:mm:ss");
