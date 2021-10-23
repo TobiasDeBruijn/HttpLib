@@ -8,8 +8,8 @@ plugins {
 version = "1.2.1"
 group = "dev.array21"
 
-sourceCompatibility = 1.16
-targetCompatibility = 1.16
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 repositories {}
 
@@ -89,7 +89,5 @@ publishing {
 }
 
 signing {
-	if(!System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-	    sign publishing.publications.mavenJava
-	}
+	sign publishing.publications.mavenJava
 }
