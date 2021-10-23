@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = "1.2.1"
+version = "1.2.2"
 group = "dev.array21"
 
 sourceCompatibility = 1.11
