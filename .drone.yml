@@ -47,3 +47,5 @@ steps:
     webhook:
       from_secret: discord_webhook
     username: Drone CI/CD - HttpLib - build JDK 11
+  when:
+    status: [ failure ]
